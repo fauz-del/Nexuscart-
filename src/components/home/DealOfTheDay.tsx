@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-// Import an image from your assets for the deal
+import { useNavigate } from "react-router-dom"; // Import navigation hook
 import headphones2 from "../../assets/headphones/headphones2.jpg"; 
 
 export default function DealOfTheDay() {
+  const navigate = useNavigate(); // Initialize navigate
   const [time, setTime] = useState({ h: 24, m: 0, s: 0 });
 
   useEffect(() => {
@@ -42,14 +43,13 @@ export default function DealOfTheDay() {
           </h2>
           
           <p className="text-gray-400 max-w-lg mb-8 text-base md:text-lg leading-relaxed">
-            Quantum Audio G-7 Headphones. 80h Battery. Adaptive ANC. Spatial Audio. This offer expires in exactly 24 hours.
+            Quantum Audio Sonic-H2 Headphones. 80h Battery. Adaptive ANC. Spatial Audio. This offer expires in exactly 24 hours.
           </p>
           
           {/* Timer Display */}
           <div className="flex justify-center lg:justify-start gap-6 mb-10">
             {[time.h, time.m, time.s].map((v, i) => (
               <div key={i} className="text-center">
-                {/* Unique 'Digital Readout' background */}
                 <div className="text-4xl md:text-5xl font-mono font-black text-cyan-400 bg-black/50 border border-cyan-500/20 w-24 md:w-28 py-3 rounded-xl shadow-inner shadow-cyan-500/10">
                   {v.toString().padStart(2, '0')}
                 </div>
@@ -58,8 +58,11 @@ export default function DealOfTheDay() {
             ))}
           </div>
 
-          {/* Action Button */}
-          <button className="w-full lg:w-auto group relative overflow-hidden bg-white text-black px-12 py-4 rounded-xl font-black text-base uppercase tracking-widest transition-all hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] active:scale-95 cursor-pointer">
+          {/* Action Button: Linked to the Sonic-H2 Product Page (a2) */}
+          <button 
+            onClick={() => navigate('/shop/product/a2')}
+            className="w-full lg:w-auto group relative overflow-hidden bg-white text-black px-12 py-4 rounded-xl font-black text-base uppercase tracking-widest transition-all hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] active:scale-95 cursor-pointer"
+          >
             <span className="relative z-10">Secure Unit</span>
              <div className="absolute inset-0 bg-cyan-500 translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
           </button>

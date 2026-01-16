@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'; // Add this import
 import { X, Cpu, Smartphone, Headphones, Gamepad2, Laptop, Watch } from 'lucide-react';
 
 interface SidebarProps {
@@ -5,6 +6,7 @@ interface SidebarProps {
   onClose: () => void;
 }
 
+// Ensure these names match the category strings in your SearchPage exactly
 const categories = [
   { name: 'Computing', icon: Cpu },
   { name: 'Mobile', icon: Smartphone },
@@ -15,6 +17,14 @@ const categories = [
 ];
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const navigate = useNavigate(); // Initialize navigate
+
+  const handleCategoryClick = (categoryName: string) => {
+    // Navigate to shop and pass the category in state
+    navigate('/shop', { state: { selectedCategory: categoryName } });
+    onClose(); // Close sidebar after clicking
+  };
+
   return (
     <>
       <div 
@@ -26,7 +36,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         dark:bg-neutral-950 dark:border-white/10 dark:text-white`}>
         
         <div className="p-6 flex justify-between items-center border-b border-gray-100 dark:border-white/10">
-          <h2 className="font-bold text-xl tracking-tighter text-cyan-600 dark:text-cyan-500">NEXUS CATEGORIES</h2>
+          <h2 className="font-bold text-xl tracking-tighter text-cyan-600 dark:text-cyan-500 uppercase">Nexus Categories</h2>
           <button onClick={onClose} className="p-2 rounded-lg cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-white/5">
             <X size={20}/>
           </button>
@@ -34,9 +44,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         <nav className="p-4 space-y-2">
           {categories.map((cat) => (
-            <div key={cat.name} className="flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all group
+            <div 
+              key={cat.name} 
+              onClick={() => handleCategoryClick(cat.name)} // Add click handler
+              className="flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all group
               hover:bg-cyan-50 hover:text-cyan-600
-              dark:hover:bg-cyan-500/10 dark:hover:text-cyan-400">
+              dark:hover:bg-cyan-500/10 dark:hover:text-cyan-400"
+            >
               <cat.icon size={20} className="group-hover:scale-110 transition-transform" />
               <span className="font-medium text-sm uppercase tracking-wide">{cat.name}</span>
             </div>

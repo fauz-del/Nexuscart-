@@ -1,11 +1,13 @@
+import { useNavigate } from "react-router-dom"; // Import the hook
 import vrgoogle2 from "../../assets/vrgoogle/vrgoogle2.jpeg";
-import smartwatch2 from "../../assets/watch/smartwatch2.jpeg";
 import airpod3 from "../../assets/airpod/airpod3.jpeg";
 
 export default function Popular() {
+  const navigate = useNavigate(); // Initialize navigation
+
   const items = [
     {
-      id: "01",
+      id: "v2", // Real DB ID for Vision G2
       name: "Nexus Vision",
       model: "Gen-X Optics",
       desc: "The industry benchmark for spatial computing and neural processing.",
@@ -14,7 +16,7 @@ export default function Popular() {
       accent: "from-cyan-500/20"
     },
     {
-      id: "02",
+      id: "ap3", // Real DB ID for Air-P3
       name: "Sonic Pods",
       model: "Aura Series",
       desc: "Revolutionary bio-acoustic tuning with zero-latency hardware sync.",
@@ -37,28 +39,27 @@ export default function Popular() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <div key={item.id} className="group relative h-[600px] flex flex-col justify-between overflow-hidden rounded-[48px] bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/5 transition-all duration-700 hover:shadow-2xl dark:hover:shadow-cyan-500/10">
             
             {/* Background Layer */}
             <div className={`absolute inset-0 bg-gradient-to-br ${item.accent} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
             
-            {/* Image Section - Takes top half */}
+            {/* Image Section */}
             <div className="relative h-1/2 w-full overflow-hidden">
               <img 
                 src={item.img} 
                 alt={item.name} 
                 className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110"
               />
-              {/* Glass Tag */}
               <div className="absolute top-8 right-8 backdrop-blur-xl bg-white/60 dark:bg-black/40 border border-white/20 dark:border-white/10 px-4 py-1.5 rounded-full z-20">
                 <p className="text-[10px] font-black text-slate-900 dark:text-white tracking-[0.2em] uppercase">{item.tag}</p>
               </div>
             </div>
 
-            {/* Content Section - Bottom Half */}
+            {/* Content Section */}
             <div className="relative p-10 md:p-12 flex flex-col justify-end z-10 bg-white/40 dark:bg-transparent backdrop-blur-sm md:backdrop-blur-none">
-              <span className="text-cyan-600 dark:text-cyan-500 font-black tracking-tighter text-sm mb-2 block">TOP RANKED // {item.id}</span>
+              <span className="text-cyan-600 dark:text-cyan-500 font-black tracking-tighter text-sm mb-2 block">TOP RANKED // 0{index + 1}</span>
               
               <h3 className="text-4xl md:text-5xl font-black mb-4 uppercase text-slate-900 dark:text-white leading-[0.9] tracking-tighter">
                 {item.name} <br/>
@@ -70,7 +71,11 @@ export default function Popular() {
               </p>
               
               <div className="flex items-center gap-6">
-                <button className="group/btn relative overflow-hidden bg-slate-900 dark:bg-white text-white dark:text-black px-10 py-4 rounded-2xl font-black text-xs tracking-widest uppercase transition-all active:scale-95 cursor-pointer">
+                {/* CONFIGURE BUTTON: Redirects to Product Page */}
+                <button 
+                  onClick={() => navigate(`/shop/product/${item.id}`)}
+                  className="group/btn relative overflow-hidden bg-slate-900 dark:bg-white text-white dark:text-black px-10 py-4 rounded-2xl font-black text-xs tracking-widest uppercase transition-all active:scale-95 cursor-pointer"
+                >
                   <span className="relative z-10">Configure</span>
                   <div className="absolute inset-0 bg-cyan-500 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
                 </button>
@@ -82,7 +87,6 @@ export default function Popular() {
               </div>
             </div>
 
-            {/* Industrial Corner Detail */}
             <div className="absolute bottom-0 right-0 p-8 opacity-10 group-hover:opacity-30 transition-opacity">
                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" className="text-slate-900 dark:text-white">
                  <path d="M0 39H39V0" stroke="currentColor" strokeWidth="2"/>

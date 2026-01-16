@@ -1,5 +1,8 @@
+import { useNavigate } from "react-router-dom"; // Import navigation hook
+
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear(); // Properly set for 2026
+  const navigate = useNavigate(); // Initialize navigate
 
   return (
     <footer className="relative bg-slate-50 dark:bg-black pt-24 pb-12 px-6 overflow-hidden border-t border-slate-200 dark:border-white/5">
@@ -20,7 +23,7 @@ export default function Footer() {
               Join 50k+ enthusiasts receiving early access to hardware drops and system updates.
             </p>
             
-            <form className="flex max-w-md gap-2">
+            <form className="flex max-w-md gap-2" onSubmit={(e) => e.preventDefault()}>
               <input 
                 type="email" 
                 placeholder="TERMINAL@USER.COM" 
@@ -37,8 +40,9 @@ export default function Footer() {
             <div>
               <h4 className="text-[10px] font-black text-cyan-600 dark:text-cyan-400 tracking-[0.3em] uppercase mb-6">Directory</h4>
               <ul className="space-y-4 text-sm font-bold text-slate-600 dark:text-neutral-400">
-                <li className="hover:text-cyan-500 cursor-pointer transition-colors">Catalog</li>
-                <li className="hover:text-cyan-500 cursor-pointer transition-colors">Archive</li>
+                {/* NAVIGATE TO SHOP */}
+                <li onClick={() => navigate('/shop')} className="hover:text-cyan-500 cursor-pointer transition-colors">Catalog</li>
+                <li onClick={() => navigate('/shop')} className="hover:text-cyan-500 cursor-pointer transition-colors">Archive</li>
                 <li className="hover:text-cyan-500 cursor-pointer transition-colors">Rewards</li>
               </ul>
             </div>
@@ -52,10 +56,10 @@ export default function Footer() {
             </div>
             <div className="col-span-2 md:col-span-1">
               <h4 className="text-[10px] font-black text-cyan-600 dark:text-cyan-400 tracking-[0.3em] uppercase mb-6">Terminal</h4>
-              <p className="text-xs font-mono text-slate-400 dark:text-neutral-600 leading-relaxed">
+              <p className="text-xs font-mono text-slate-400 dark:text-neutral-600 leading-relaxed uppercase">
                 NEXUS_HQ <br />
                 Lagos Sector <br />
-                V-0.2.6 // 2026
+                V-0.2.6 // {currentYear}
               </p>
             </div>
           </div>
@@ -68,12 +72,15 @@ export default function Footer() {
           </p>
           
           <div className="flex items-center gap-8">
-            {/* Animated Status Pulse */}
             <div className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
               <span className="text-[10px] font-black text-slate-400 dark:text-neutral-500 uppercase tracking-tighter">System Normal</span>
             </div>
-            <div className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest border-b border-cyan-500">
+            {/* Smooth Scroll to Top */}
+            <div 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest border-b border-cyan-500 cursor-pointer hover:text-cyan-500 transition-colors"
+            >
               Back to Top ↑
             </div>
           </div>
