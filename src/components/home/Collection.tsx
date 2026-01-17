@@ -1,44 +1,44 @@
-import { useNavigate } from "react-router-dom"; // Import hook
-import headphones3 from "../../assets/headphones/headphones3.jpg";
-import vrgoogles1 from "../../assets/vrgoogle/vrgoogles1.jpeg";
-import smartwatch1 from "../../assets/watch/smartwatch1.jpeg";
+import { useNavigate } from "react-router-dom";
 
 export default function Collection() {
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
+
+  // Updated categories to use your Supabase Storage URLs (replace [PROJECT_ID])
+  const baseImgUrl = "https://[YOUR_PROJECT_ID].supabase.co/storage/v1/object/public/product-images/";
 
   const categories = [
     { 
       name: "VR GEAR", 
-      dbName: "VR", // Maps to your database category string
-      img: vrgoogles1, 
+      dbName: "VR", 
+      img: `${baseImgUrl}vrgoogles1.jpeg`, 
       size: "md:col-span-2 md:row-span-2", 
       tag: "Immersive" 
     },
     { 
       name: "SMART WATCH", 
       dbName: "Wearable", 
-      img: smartwatch1, 
+      img: `${baseImgUrl}smartwatch1.jpeg`, 
       size: "md:col-span-1 md:row-span-1", 
       tag: "Wearable" 
     },
     { 
       name: "AUDIO", 
       dbName: "Audio", 
-      img: headphones3, 
+      img: `${baseImgUrl}headphones3.jpg`, 
       size: "md:col-span-1 md:row-span-2", 
       tag: "Hi-Fi" 
     },
     { 
-      name: "GAMING", 
-      dbName: "VR", // Placeholder for gaming
-      img: vrgoogles1, 
+      name: "MOBILE", // Changed from "Gaming" to match your Mobile category
+      dbName: "Mobile", 
+      img: `${baseImgUrl}phone1.jpeg`, 
       size: "md:col-span-1 md:row-span-1", 
-      tag: "Pro" 
+      tag: "Next-Gen" 
     },
   ];
 
-  // Logic: Navigate to shop with pre-selected category
   const handleCategoryNavigate = (catName: string) => {
+    // This sends the state to SearchPage.tsx or ProductPage.tsx
     navigate('/shop', { state: { selectedCategory: catName } });
   };
 
@@ -52,7 +52,6 @@ export default function Collection() {
             </h2>
             <p className="text-gray-500 mt-2 font-medium text-lg">Handpicked future-tech essentials.</p>
           </div>
-          {/* Browse All -> Navigates to Shop with "All" */}
           <button 
             onClick={() => navigate('/shop')}
             className="text-white bg-white/5 border border-white/10 px-6 py-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
@@ -65,7 +64,6 @@ export default function Collection() {
           {categories.map((cat, idx) => (
             <div 
               key={idx} 
-              // Click handler added here
               onClick={() => handleCategoryNavigate(cat.dbName)}
               className={`relative group overflow-hidden rounded-[2rem] border border-white/5 cursor-pointer ${cat.size}`}
             >
@@ -73,6 +71,7 @@ export default function Collection() {
                 src={cat.img} 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
                 alt={cat.name} 
+                loading="lazy"
               />
               
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 transition-opacity group-hover:opacity-100" />
@@ -97,8 +96,6 @@ export default function Collection() {
                   </svg>
                 </div>
               </div>
-
-              <div className="absolute inset-0 border-2 border-cyan-500/0 group-hover:border-cyan-500/50 rounded-[2rem] transition-all duration-500 pointer-events-none" />
             </div>
           ))}
         </div>

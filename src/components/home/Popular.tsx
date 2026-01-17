@@ -1,30 +1,47 @@
-import { useNavigate } from "react-router-dom"; // Import the hook
-import vrgoogle2 from "../../assets/vrgoogle/vrgoogle2.jpeg";
-import airpod3 from "../../assets/airpod/airpod3.jpeg";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
 
 export default function Popular() {
-  const navigate = useNavigate(); // Initialize navigation
+  const navigate = useNavigate();
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const items = [
-    {
-      id: "v2", // Real DB ID for Vision G2
-      name: "Nexus Vision",
-      model: "Gen-X Optics",
-      desc: "The industry benchmark for spatial computing and neural processing.",
-      img: vrgoogle2,
-      tag: "SPATIAL",
-      accent: "from-cyan-500/20"
-    },
-    {
-      id: "ap3", // Real DB ID for Air-P3
-      name: "Sonic Pods",
-      model: "Aura Series",
-      desc: "Revolutionary bio-acoustic tuning with zero-latency hardware sync.",
-      img: airpod3,
-      tag: "AUDIO",
-      accent: "from-blue-500/20"
+  useEffect(() => {
+    async function fetchPopular() {
+      try {
+        // 1. Try to fetch products marked as popular
+        let { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_popular', true)
+          .limit(2);
+
+        if (error) throw error;
+
+        // 2. Fallback: If no popular items found, fetch any 2 products
+        if (!data || data.length === 0) {
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('products')
+            .select('*')
+            .limit(2)
+            .order('created_at', { ascending: false }); // Show newest first
+
+          if (fallbackError) throw fallbackError;
+          data = fallbackData;
+        }
+
+        if (data) setItems(data);
+      } catch (error) {
+        console.error("Error fetching popular items:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    fetchPopular();
+  }, []);
+
+  if (loading) return null;
 
   return (
     <section className="py-24 px-6 max-w-7xl mx-auto bg-white dark:bg-black transition-colors duration-500">
@@ -42,36 +59,32 @@ export default function Popular() {
         {items.map((item, index) => (
           <div key={item.id} className="group relative h-[600px] flex flex-col justify-between overflow-hidden rounded-[48px] bg-slate-50 dark:bg-neutral-950 border border-slate-200 dark:border-white/5 transition-all duration-700 hover:shadow-2xl dark:hover:shadow-cyan-500/10">
             
-            {/* Background Layer */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${item.accent} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
+            <div className={`absolute inset-0 bg-gradient-to-br ${index === 0 ? 'from-cyan-500/20' : 'from-blue-500/20'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
             
-            {/* Image Section */}
             <div className="relative h-1/2 w-full overflow-hidden">
               <img 
-                src={item.img} 
+                src={item.image_url} 
                 alt={item.name} 
                 className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110"
               />
               <div className="absolute top-8 right-8 backdrop-blur-xl bg-white/60 dark:bg-black/40 border border-white/20 dark:border-white/10 px-4 py-1.5 rounded-full z-20">
-                <p className="text-[10px] font-black text-slate-900 dark:text-white tracking-[0.2em] uppercase">{item.tag}</p>
+                <p className="text-[10px] font-black text-slate-900 dark:text-white tracking-[0.2em] uppercase">{item.category}</p>
               </div>
             </div>
 
-            {/* Content Section */}
             <div className="relative p-10 md:p-12 flex flex-col justify-end z-10 bg-white/40 dark:bg-transparent backdrop-blur-sm md:backdrop-blur-none">
               <span className="text-cyan-600 dark:text-cyan-500 font-black tracking-tighter text-sm mb-2 block">TOP RANKED // 0{index + 1}</span>
               
               <h3 className="text-4xl md:text-5xl font-black mb-4 uppercase text-slate-900 dark:text-white leading-[0.9] tracking-tighter">
                 {item.name} <br/>
-                <span className="text-slate-400 dark:text-neutral-600 italic font-medium">{item.model}</span>
+                <span className="text-slate-400 dark:text-neutral-600 italic font-medium">{item.category} Series</span>
               </h3>
               
-              <p className="text-slate-600 dark:text-neutral-400 mb-8 max-w-sm text-sm md:text-base leading-relaxed">
-                {item.desc}
+              <p className="text-slate-600 dark:text-neutral-400 mb-8 max-w-sm text-sm md:text-base leading-relaxed line-clamp-2">
+                {item.description}
               </p>
               
               <div className="flex items-center gap-6">
-                {/* CONFIGURE BUTTON: Redirects to Product Page */}
                 <button 
                   onClick={() => navigate(`/shop/product/${item.id}`)}
                   className="group/btn relative overflow-hidden bg-slate-900 dark:bg-white text-white dark:text-black px-10 py-4 rounded-2xl font-black text-xs tracking-widest uppercase transition-all active:scale-95 cursor-pointer"

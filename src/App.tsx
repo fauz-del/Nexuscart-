@@ -1,3 +1,4 @@
+import SuccessPage from './pages/shop/SuccessPage';
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Reveal } from './components/layout/Reveal';
@@ -59,6 +60,8 @@ export default function App() {
             <Route path="/shop/product/:id" element={<ProductPage />} /> 
             <Route path="/cart" element={<CartPage />} /> {/* New Cart Route */}
             <Route path="/about" element={<AboutUs />} />
+            <Route path="/shop/success" element={<SuccessPage />} /> />
+
           </Routes>
         </div>
       </Router>

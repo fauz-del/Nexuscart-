@@ -2,29 +2,50 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { Reveal } from '../../components/layout/Reveal';
-import { ALL_PRODUCTS } from '../../data/products.ts';
+import { supabase } from '../../lib/supabase'; // Import live DB
 
 export default function SearchPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [products, setProducts] = useState<any[]>([]); // State for DB products
   const [activeCat, setActiveCat] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const filteredProducts = useMemo(() => {
-    return ALL_PRODUCTS.filter(product => {
-      const categoryMatch = activeCat === "All" || product.cat === activeCat;
-      const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-      return categoryMatch && searchMatch;
-    });
-  }, [activeCat, searchTerm]);
-  
+  // 1. Fetch products from Supabase on mount
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const { data, error } = await supabase
+          .from('products')
+          .select('*');
+        if (error) throw error;
+        if (data) setProducts(data);
+      } catch (err) {
+        console.error("SEARCH_MATRIX_ERROR:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  // 2. Logic: Handle category state passed from Collection.tsx
   useEffect(() => {
     if (location.state && location.state.selectedCategory) {
       setActiveCat(location.state.selectedCategory);
-      // Optional: Clear state so it doesn't persist on manual refreshes
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+  // 3. Filtering logic (Client-side for speed)
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const categoryMatch = activeCat === "All" || product.category === activeCat;
+      const searchMatch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return categoryMatch && searchMatch;
+    });
+  }, [activeCat, searchTerm, products]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] pt-28 pb-20 px-6 transition-colors duration-500">
@@ -71,6 +92,13 @@ export default function SearchPage() {
           ))}
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-20 font-mono text-cyan-500 animate-pulse uppercase text-xs tracking-widest">
+            SYNCHRONIZING_DATABASE...
+          </div>
+        )}
+
         {/* Product Matrix */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProducts.map((product) => (
@@ -81,14 +109,14 @@ export default function SearchPage() {
               >
                 <div className="aspect-square mb-6 overflow-hidden bg-white dark:bg-[#0a0a0a] flex items-center justify-center">
                   <img 
-                    src={product.img} 
+                    src={product.image_url} // Changed to DB field
                     alt={product.name}
                     className="w-full h-full object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
                   />
                 </div>
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-[10px] font-mono text-cyan-500 mb-1">{product.cat} // {product.status}</p>
+                    <p className="text-[10px] font-mono text-cyan-500 mb-1">{product.category} // {product.stock_count > 0 ? 'LIVE' : 'OUT_OF_STOCK'}</p>
                     <h3 className="text-xl font-bold dark:text-white group-hover:text-cyan-500 transition-colors">{product.name}</h3>
                   </div>
                   <p className="text-lg font-mono font-bold dark:text-white tracking-tighter">${product.price}</p>
@@ -99,7 +127,7 @@ export default function SearchPage() {
         </div>
 
         {/* No Matches */}
-        {filteredProducts.length === 0 && (
+        {!loading && filteredProducts.length === 0 && (
           <div className="text-center py-32 border border-dashed border-slate-300 dark:border-white/10">
             <p className="font-mono text-slate-500 text-xs tracking-widest">ZERO_MATCHES_RETURNED_BY_SYSTEM</p>
           </div>

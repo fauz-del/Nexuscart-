@@ -13,12 +13,22 @@ interface CartContextType {
   addToCart: (product: any, quantity: number) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, delta: number) => void;
+  clearCart: () => void; // Added for Success Page logic
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  // 1. Initialize cart from LocalStorage if it exists
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    const saved = localStorage.getItem('nexus_cart');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // 2. Save to LocalStorage whenever cart changes
+  useEffect(() => {
+    localStorage.setItem('nexus_cart', JSON.stringify(cart));
+  }, [cart]);
 
   const addToCart = (product: any, quantity: number) => {
     setCart(prev => {
@@ -39,8 +49,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     ));
   };
 
+  // 3. Logic to empty the cart after successful checkout
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem('nexus_cart');
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart }}>
       {children}
     </CartContext.Provider>
   );
