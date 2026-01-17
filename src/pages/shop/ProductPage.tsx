@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, Plus, Minus, Check, Zap } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { supabase } from '../../lib/supabase'; // Import supabase directly for the specific query
+import { supabase } from '../../lib/supabase';
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -15,22 +15,23 @@ export default function ProductPage() {
   const [added, setAdded] = useState(false);
   const [selectedVar, setSelectedVar] = useState("");
 
+  // FIX: Mandatory Supabase 2026 Public Storage URL structure
+  const baseImgUrl = "https://welgpcjogqzmidyrjhwj.supabase.co";
+
   useEffect(() => {
     async function getProduct() {
       try {
         setLoading(true);
-        // Optimized: Fetch ONLY the product with this ID
         const { data, error } = await supabase
           .from('products')
           .select('*')
           .eq('id', id)
-          .single(); // Tells Supabase to return one object, not an array
+          .single();
         
         if (error) throw error;
 
         if (data) {
           setProduct(data);
-          // Variations handling: check if the column exists or use an empty array
           setSelectedVar(data.variations?.[0] || "");
         }
       } catch (error) {
@@ -67,7 +68,8 @@ export default function ProductPage() {
       id: product.id,
       name: product.name,
       price: product.price,
-      img: product.image_url, // Updated from .img to .image_url
+      // FIX: Passing the full constructed URL to the Cart
+      img: `${baseImgUrl}${product.image_url}`, 
       variation: selectedVar 
     }, quantity);
 
@@ -90,7 +92,8 @@ export default function ProductPage() {
           <div className="relative aspect-square bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-cyan-500/5 via-transparent to-transparent opacity-50" />
             <img 
-              src={product.image_url} // Updated to .image_url
+              // FIX: Direct reference to public storage URL
+              src={`${baseImgUrl}${product.image_url}`} 
               className="w-full h-full object-contain p-12 hover:scale-105 transition-transform duration-700 relative z-10" 
               alt={product.name} 
             />
@@ -103,7 +106,7 @@ export default function ProductPage() {
             <div className="flex items-center gap-2 mb-4">
               <Zap size={14} className="text-cyan-500 fill-cyan-500" />
               <p className="text-[10px] font-mono text-cyan-500 uppercase tracking-[0.3em]">
-                {product.category} // UNIT_REF_{product.id.slice(0,8)}
+                {product.category} // UNIT_REF_{product.id.toString().slice(0,8)}
               </p>
             </div>
             
@@ -112,7 +115,7 @@ export default function ProductPage() {
             </h1>
             
             <p className="text-lg text-slate-500 dark:text-neutral-400 mb-10 leading-relaxed max-w-lg">
-              {product.description} {/* Updated to .description */}
+              {product.description}
             </p>
 
             <div className="text-6xl font-black text-cyan-500 font-mono mb-12 flex items-baseline gap-2">
@@ -120,7 +123,6 @@ export default function ProductPage() {
               {product.price}
             </div>
 
-            {/* Variation Selector logic remains the same */}
             {product.variations && product.variations.length > 0 && (
               <div className="mb-10">
                 <p className="text-[10px] font-mono text-slate-400 uppercase tracking-widest mb-4">Select_Configuration</p>

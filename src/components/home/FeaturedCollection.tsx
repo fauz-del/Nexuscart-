@@ -7,10 +7,12 @@ export default function FeaturedCollection() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // FIX: Base URL for 2026 Supabase public storage access
+  const baseImgUrl = "https://welgpcjogqzmidyrjhwj.supabase.co";
+
   useEffect(() => {
     async function fetchFeatured() {
       try {
-        // 1. Fetch items specifically marked as featured in Supabase
         let { data, error } = await supabase
           .from('products')
           .select('*')
@@ -19,7 +21,6 @@ export default function FeaturedCollection() {
 
         if (error) throw error;
 
-        // 2. Fallback: If no featured items, get the 4 most recent products
         if (!data || data.length === 0) {
           const { data: fallback } = await supabase
             .from('products')
@@ -76,8 +77,12 @@ export default function FeaturedCollection() {
               
               <div className="relative aspect-square w-full mb-6 overflow-hidden rounded-[30px] bg-white dark:bg-black border border-slate-100 dark:border-white/5">
                 <img 
-                  // OPTIMIZATION: Use Supabase CDN to resize images to 400px width
-                  src={`${item.image_url}?width=400&quality=80`} 
+                  /* 
+                     FIX: We construct the URL manually because the 'image_url' in 
+                     your database likely only contains the filename (e.g., 'iphone1.jpeg').
+                     Also removed '?width=400' to prevent 404s on the Free Plan.
+                  */
+                  src={`${baseImgUrl}${item.image_url}`} 
                   alt={item.name} 
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
@@ -89,7 +94,7 @@ export default function FeaturedCollection() {
                   </div>
                 </div>
                 <div className="absolute bottom-4 right-4 text-[9px] font-mono text-slate-400 dark:text-neutral-500 bg-white/80 dark:bg-black/80 backdrop-blur-md px-2 py-1 rounded">
-                  UNIT_{item.id.slice(0, 5).toUpperCase()}
+                  UNIT_{item.id.toString().slice(0, 5).toUpperCase()}
                 </div>
               </div>
 

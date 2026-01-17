@@ -1,8 +1,5 @@
 import { Reveal } from '../../components/layout/Reveal';
 import { ShieldCheck, Zap, Globe, Cpu, Star, Quote } from 'lucide-react';
-import laptop from "../../assets/lp/laptop.jpg";
-import vrgoogle2 from "../../assets/vrgoogle/vrgoogle2.jpeg";
-import phone1 from "../../assets/phones/phone1.jpeg";
 
 export default function AboutUs() {
   const stats = [
@@ -68,7 +65,12 @@ export default function AboutUs() {
           <div className="lg:col-span-5 relative group">
             <Reveal>
               <div className="aspect-[4/5] overflow-hidden bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 relative">
-                <img src={laptop} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt="Hardware" />
+                {/* FIX: Use absolute string path from public folder */}
+                <img 
+                  src="/assets/lp/laptop.jpg" 
+                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" 
+                  alt="Hardware" 
+                />
                 <div className="absolute inset-0 bg-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <div className="absolute -bottom-8 -left-8 bg-slate-900 dark:bg-white p-10 hidden md:block">
@@ -101,14 +103,14 @@ export default function AboutUs() {
           </div>
         </div>
 
-        {/* SECTION 4: TESTIMONIAL MATRIX (UNIQUE ASYMMETRICAL) */}
+        {/* SECTION 4: TESTIMONIAL MATRIX */}
         <div className="mb-40">
           <p className="text-center font-mono text-[10px] text-cyan-500 uppercase tracking-[0.5em] mb-16">// User_Feedback_Logs</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-slate-200 dark:bg-white/10 border border-slate-200 dark:border-white/10">
             {testimonials.map((t, i) => (
               <div key={i} className="bg-white dark:bg-[#050505] p-12 space-y-6">
                 <Quote className="text-cyan-500 opacity-50" size={32} />
-                <p className="text-2xl font-medium dark:text-white leading-snug italic italic">"{t.text}"</p>
+                <p className="text-2xl font-medium dark:text-white leading-snug italic">"{t.text}"</p>
                 <div className="flex items-center gap-4 pt-4">
                   <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600" />
                   <div>
@@ -125,7 +127,12 @@ export default function AboutUs() {
         <div className="relative group">
           <Reveal>
             <div className="relative aspect-[21/9] overflow-hidden border border-slate-200 dark:border-white/10">
-              <img src={vrgoogle2} className="w-full h-full object-cover scale-110 grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Vision" />
+              {/* FIX: Use absolute string path from public folder */}
+              <img 
+                src="/assets/vrgoogle/vrgoogle2.jpeg" 
+                className="w-full h-full object-cover scale-110 grayscale group-hover:grayscale-0 transition-all duration-1000" 
+                alt="Vision" 
+              />
               <div className="absolute inset-0 bg-black/40" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
                  <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter mb-6">Join the <span className="italic text-cyan-500">Nexus.</span></h2>

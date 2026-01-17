@@ -2,17 +2,19 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { Reveal } from '../../components/layout/Reveal';
-import { supabase } from '../../lib/supabase'; // Import live DB
+import { supabase } from '../../lib/supabase';
 
 export default function SearchPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [products, setProducts] = useState<any[]>([]); // State for DB products
+  const [products, setProducts] = useState<any[]>([]);
   const [activeCat, setActiveCat] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // 1. Fetch products from Supabase on mount
+  // FIX: Base URL for 2026 Supabase public storage access
+  const baseImgUrl = "https://welgpcjogqzmidyrjhwj.supabase.co";
+
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -30,7 +32,6 @@ export default function SearchPage() {
     fetchProducts();
   }, []);
 
-  // 2. Logic: Handle category state passed from Collection.tsx
   useEffect(() => {
     if (location.state && location.state.selectedCategory) {
       setActiveCat(location.state.selectedCategory);
@@ -38,7 +39,6 @@ export default function SearchPage() {
     }
   }, [location.state]);
 
-  // 3. Filtering logic (Client-side for speed)
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const categoryMatch = activeCat === "All" || product.category === activeCat;
@@ -92,14 +92,12 @@ export default function SearchPage() {
           ))}
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="text-center py-20 font-mono text-cyan-500 animate-pulse uppercase text-xs tracking-widest">
             SYNCHRONIZING_DATABASE...
           </div>
         )}
 
-        {/* Product Matrix */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProducts.map((product) => (
             <Reveal key={product.id}>
@@ -109,7 +107,11 @@ export default function SearchPage() {
               >
                 <div className="aspect-square mb-6 overflow-hidden bg-white dark:bg-[#0a0a0a] flex items-center justify-center">
                   <img 
-                    src={product.image_url} // Changed to DB field
+                    /* 
+                       FIX: Combining the mandatory storage path with the filename 
+                       found in your database.
+                    */
+                    src={`${baseImgUrl}${product.image_url}`}
                     alt={product.name}
                     className="w-full h-full object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
                   />
@@ -126,7 +128,6 @@ export default function SearchPage() {
           ))}
         </div>
 
-        {/* No Matches */}
         {!loading && filteredProducts.length === 0 && (
           <div className="text-center py-32 border border-dashed border-slate-300 dark:border-white/10">
             <p className="font-mono text-slate-500 text-xs tracking-widest">ZERO_MATCHES_RETURNED_BY_SYSTEM</p>

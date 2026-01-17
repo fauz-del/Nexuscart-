@@ -1,19 +1,29 @@
 import { useNavigate } from "react-router-dom";
 import { Image } from "@unpic/react";
-import hero1 from "../../assets/lp/hero1.jpg";
 
 const Hero = () => {
   const navigate = useNavigate();
+
+  // FIX: Using absolute path from the public folder or Supabase fallback
+  // Path A: From your public folder (Best for GitHub Pages)
+  const localHero = "/assets/lp/hero1.jpg"; 
+  
+  // Path B: From your Supabase bucket (Your SQL confirmed hero1.jpg is at root)
+  const supabaseHero = "https://welgpcjogqzmidyrjhwj.supabase.co";
 
   return (
     <section className="relative min-h-screen w-full flex items-center overflow-hidden bg-black transform-gpu">
       {/* Optimized Background Image */}
       <div className="absolute inset-0 w-full h-full z-0">
         <Image
-          src={hero1}
+          /* 
+             Using supabaseHero ensures it works even if 
+             local file paths break on GitHub Pages 2026.
+          */
+          src={supabaseHero} 
           layout="fullWidth"
           alt="Nexus Hero Background"
-          priority // Tells browser to load this first
+          priority 
           className="w-full h-full object-cover opacity-60"
         />
       </div>

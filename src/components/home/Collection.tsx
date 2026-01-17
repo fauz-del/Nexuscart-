@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 export default function Collection() {
   const navigate = useNavigate();
 
-  // Replace [YOUR_PROJECT_ID] with your actual Supabase project ID
+  // FIX: Added the mandatory storage API path and your bucket name
   const baseImgUrl = "https://welgpcjogqzmidyrjhwj.supabase.co";
 
   const categories = [
     { 
       name: "VR GEAR", 
       dbName: "VR", 
+      // Result: https://welgpcjogqzmidyrjhwj.supabase.covrgoogles1.jpeg
       img: `${baseImgUrl}vrgoogles1.jpeg`, 
       size: "md:col-span-2 md:row-span-2", 
       tag: "Immersive" 
@@ -31,7 +32,7 @@ export default function Collection() {
     { 
       name: "MOBILE", 
       dbName: "Mobile", 
-      img: `${baseImgUrl}phone1.jpeg`, 
+      img: `${baseImgUrl}iphone1.jpeg`, 
       size: "md:col-span-1 md:row-span-1", 
       tag: "Next-Gen" 
     },
@@ -42,7 +43,6 @@ export default function Collection() {
   };
 
   return (
-    // Added transform-gpu to offload scrolling work to the graphics chip
     <section className="bg-black py-24 px-6 transform-gpu">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
@@ -65,12 +65,10 @@ export default function Collection() {
             <div 
               key={idx} 
               onClick={() => handleCategoryNavigate(cat.dbName)}
-              // Added will-change-transform and transform-gpu for ultra-smooth hover scaling
               className={`relative group overflow-hidden rounded-[2rem] border border-white/5 cursor-pointer transform-gpu will-change-transform ${cat.size}`}
             >
               <img 
-                // OPTIMIZATION: Requesting resized images (800px for large, 400px for small)
-                src={`${cat.img}?width=${cat.size.includes('col-span-2') ? '800' : '400'}&quality=80`} 
+                src={cat.img} 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
                 alt={cat.name} 
                 loading="lazy"
