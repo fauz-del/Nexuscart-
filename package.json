@@ -11,7 +11,9 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@supabase/functions-js": "^2.90.1",
     "@supabase/supabase-js": "^2.90.1",
+    "@unpic/core": "^1.0.3",
     "@unpic/react": "^1.0.2",
     "cookie": "^1.1.1",
     "framer-motion": "^12.26.2",
