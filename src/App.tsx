@@ -60,7 +60,7 @@ export default function App() {
             <Route path="/shop/product/:id" element={<ProductPage />} /> 
             <Route path="/cart" element={<CartPage />} /> {/* New Cart Route */}
             <Route path="/about" element={<AboutUs />} />
-            <Route path="/shop/success" element={<SuccessPage />} /> />
+            <Route path="/shop/success" element={<SuccessPage />} /> 
 
           </Routes>
         </div>
