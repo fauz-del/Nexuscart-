@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 export default function Collection() {
   const navigate = useNavigate();
 
-  // Updated categories to use your Supabase Storage URLs (replace [PROJECT_ID])
-  const baseImgUrl = "https://[YOUR_PROJECT_ID].supabase.co/storage/v1/object/public/product-images/";
+  // Replace [YOUR_PROJECT_ID] with your actual Supabase project ID
+  const baseImgUrl = "https://welgpcjogqzmidyrjhwj.supabase.co";
 
   const categories = [
     { 
@@ -29,7 +29,7 @@ export default function Collection() {
       tag: "Hi-Fi" 
     },
     { 
-      name: "MOBILE", // Changed from "Gaming" to match your Mobile category
+      name: "MOBILE", 
       dbName: "Mobile", 
       img: `${baseImgUrl}phone1.jpeg`, 
       size: "md:col-span-1 md:row-span-1", 
@@ -38,23 +38,23 @@ export default function Collection() {
   ];
 
   const handleCategoryNavigate = (catName: string) => {
-    // This sends the state to SearchPage.tsx or ProductPage.tsx
     navigate('/shop', { state: { selectedCategory: catName } });
   };
 
   return (
-    <section className="bg-black py-24 px-6">
+    // Added transform-gpu to offload scrolling work to the graphics chip
+    <section className="bg-black py-24 px-6 transform-gpu">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
-            <h2 className="text-5xl font-black text-white tracking-tighter">
+            <h2 className="text-5xl font-black text-white tracking-tighter uppercase leading-none">
               CURATED <span className="text-cyan-500">COLLECTIONS</span>
             </h2>
             <p className="text-gray-500 mt-2 font-medium text-lg">Handpicked future-tech essentials.</p>
           </div>
           <button 
             onClick={() => navigate('/shop')}
-            className="text-white bg-white/5 border border-white/10 px-6 py-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer"
+            className="text-white bg-white/5 border border-white/10 px-6 py-2 rounded-full hover:bg-white/10 transition-colors cursor-pointer text-xs font-bold uppercase tracking-widest"
           >
             Browse All Categories
           </button>
@@ -65,10 +65,12 @@ export default function Collection() {
             <div 
               key={idx} 
               onClick={() => handleCategoryNavigate(cat.dbName)}
-              className={`relative group overflow-hidden rounded-[2rem] border border-white/5 cursor-pointer ${cat.size}`}
+              // Added will-change-transform and transform-gpu for ultra-smooth hover scaling
+              className={`relative group overflow-hidden rounded-[2rem] border border-white/5 cursor-pointer transform-gpu will-change-transform ${cat.size}`}
             >
               <img 
-                src={cat.img} 
+                // OPTIMIZATION: Requesting resized images (800px for large, 400px for small)
+                src={`${cat.img}?width=${cat.size.includes('col-span-2') ? '800' : '400'}&quality=80`} 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
                 alt={cat.name} 
                 loading="lazy"
@@ -83,7 +85,7 @@ export default function Collection() {
               </div>
 
               <div className="absolute bottom-8 left-8 right-8">
-                <h3 className="text-3xl font-black text-white tracking-tight mb-2">
+                <h3 className="text-3xl font-black text-white tracking-tight mb-2 uppercase italic leading-none">
                   {cat.name}
                 </h3>
                 

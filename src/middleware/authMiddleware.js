@@ -1,12 +1,17 @@
-import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-export const checkAuth = async () => {
-  const { data: { session }, error } = await supabase.auth.getSession()
-  
-  if (error || !session) {
-    // Standard 2026 practice: Redirect or throw a specific error for UI handling
-    throw new Error('UNAUTHORIZED_ACCESS')
-  }
-  
-  return session.user
-}
+export const ProtectedButton = ({ children, onClick }: any) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (!user) {
+      navigate('/auth/login'); // Redirect to login if not authenticated
+    } else {
+      onClick();
+    }
+  };
+
+  return <div onClick={handleClick}>{children}</div>;
+};

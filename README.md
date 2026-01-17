@@ -1,73 +1,68 @@
-# React + TypeScript + Vite
+# ⚡ NEXUS CART // v2.6
+**Next-Generation E-Commerce Matrix**  
+*Built for the modern enthusiast. Powered by Supabase & Paystack.*
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 🌐 Live Terminal
+[View Live Project](https://fauz-del.github.io)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Technical Core
+- **Framework:** React 19 + Vite 7 (TypeScript)
+- **Styling:** Tailwind CSS (GPU Accelerated)
+- **Backend:** Supabase (Auth, Database, Storage)
+- **Payments:** Paystack Protocol
+- **Animations:** Framer Motion (Nexus Matrix UI)
+- **Optimization:** @unpic/react for CDN Image Resizing
 
-## React Compiler
+## 🛠️ System Architecture
+- **Dynamic Inventory:** Real-time synchronization with Supabase PostgreSQL tables.
+- **Matrix Search:** Multi-threaded client-side filtering for instant product discovery.
+- **Secure Stash:** LocalStorage-persisted cart system with unique transaction referencing.
+- **Identity Auth:** Secure JWT-based authentication using Supabase Auth.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 📦 Local Deployment
+To initialize the mainframe locally:
 
-## Expanding the ESLint configuration
+1. **Clone the node:**
+   ```bash
+   git clone https://github.com
+   cd Nexuscart-
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+2. Install dependencies:
+    ```bash
+    pnpm install
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+3. Configure Environment:
+   Create a .env file with your credentials:
+    ```bash
+    env
+    VITE_SUPABASE_URL=your_url
+    VITE_SUPABASE_ANON_KEY=your_key
+    VITE_PAYSTACK_PUBLIC_KEY=your_key
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+4. Boot System:
+  ```bash
+    pnpm run dev
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+   -----
+📜 Database Schema
+The project uses the following PostgreSQL structure:
+- products: name, price, description, category, image_url, is_popular, is_featured.
+- orders: user_id, total_amount, status, payment_reference.
+- order_items: order_id, product_id, quantity, price_at_purchase.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+Status: Operational // 2026
+### 3. Save and Exit
+*   Press `CTRL + O`, then `Enter` to save.
+*   Press `CTRL + X` to exit.
+
+### 4. Push to GitHub
+Now, upload the README so it shows up on your repository page:
+```bash
+git add README.md
+git commit -m "docs: initialize system readme"
+git push origin main

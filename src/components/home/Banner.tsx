@@ -1,6 +1,6 @@
 export default function Banner() {
   return (
-    <section className="px-6 py-10 bg-white dark:bg-black transition-colors duration-500">
+   <section className="px-6 py-10 bg-white dark:bg-black transition-colors duration-500">
       <div className="max-w-7xl mx-auto relative group">
         {/* Animated Glow Background behind the banner */}
         <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-[40px] blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
@@ -33,7 +33,9 @@ export default function Banner() {
               {/* Button Hover Slide Effect */}
               <div className="absolute inset-0 w-0 bg-slate-900 group-hover/btn:w-full transition-all duration-300"></div>
               
-              <span className="relative z-10 text-black group-hover/btn:text-white font-black text-sm tracking-widest uppercase flex items-center gap-2">
+              <span 
+              onClick={() => navigate('/login')}
+              className="relative z-10 text-black group-hover/btn:text-white font-black text-sm tracking-widest uppercase flex items-center gap-2">
                 Sign Up Free
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />

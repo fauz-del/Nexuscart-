@@ -1,21 +1,48 @@
-import { useNavigate } from "react-router-dom"; // Import navigation hook
-import headphones2 from "../../assets/headphones/headphones2.jpg";
-import vrgoogle2 from "../../assets/vrgoogle/vrgoogle2.jpeg";
-import smartglass1 from "../../assets/glasses/smartglass1.jpeg";
-import phone1 from "../../assets/phones/phone1.jpeg";
-
-const products = [
-  { id: 'a2', name: "Sonic Pro G2", price: "249.00", img: headphones2, tag: "AUDIO", sn: "SN-082" },
-  { id: 'v2', name: "Vision X1", price: "899.00", img: vrgoogle2, tag: "OPTICS", sn: "SN-104" },
-  { id: 'g1', name: "Horizon Glass", price: "450.00", img: smartglass1, tag: "HUD", sn: "SN-019" },
-  { id: 'p1', name: "Nexus Fold", price: "1,200.00", img: phone1, tag: "MOBILE", sn: "SN-772" },
-];
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../../lib/supabase";
 
 export default function FeaturedCollection() {
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchFeatured() {
+      try {
+        // 1. Fetch items specifically marked as featured in Supabase
+        let { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_featured', true)
+          .limit(4);
+
+        if (error) throw error;
+
+        // 2. Fallback: If no featured items, get the 4 most recent products
+        if (!data || data.length === 0) {
+          const { data: fallback } = await supabase
+            .from('products')
+            .select('*')
+            .limit(4)
+            .order('created_at', { ascending: false });
+          data = fallback;
+        }
+
+        if (data) setProducts(data);
+      } catch (err) {
+        console.error("FEATURED_SYNC_ERROR:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchFeatured();
+  }, []);
+
+  if (loading) return null;
 
   return (
-    <section className="py-19 px-6 max-w-7xl mx-auto bg-white dark:bg-black transition-colors duration-500">
+    <section className="py-19 px-6 max-w-7xl mx-auto bg-white dark:bg-black transition-colors duration-500 transform-gpu">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -27,7 +54,6 @@ export default function FeaturedCollection() {
           </h2>
         </div>
         
-        {/* EXPLORE ALL -> Navigates to SearchPage */}
         <button 
           onClick={() => navigate('/shop')}
           className="group flex items-center gap-4 text-slate-900 dark:text-white font-bold text-sm tracking-widest uppercase cursor-pointer"
@@ -42,31 +68,33 @@ export default function FeaturedCollection() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((item, i) => (
           <div 
-            key={i} 
-            className="group relative cursor-pointer"
-            onClick={() => navigate(`/shop/product/${item.id}`)} // Navigate to individual product
+            key={item.id} 
+            className="group relative cursor-pointer transform-gpu will-change-transform"
+            onClick={() => navigate(`/shop/product/${item.id}`)}
           >
             <div className="relative overflow-hidden bg-slate-50 dark:bg-neutral-900/40 border border-slate-200 dark:border-white/5 rounded-[40px] p-5 transition-all duration-500 hover:border-cyan-500/50 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_50px_rgba(6,182,212,0.15)]">
               
               <div className="relative aspect-square w-full mb-6 overflow-hidden rounded-[30px] bg-white dark:bg-black border border-slate-100 dark:border-white/5">
                 <img 
-                  src={item.img} 
+                  // OPTIMIZATION: Use Supabase CDN to resize images to 400px width
+                  src={`${item.image_url}?width=400&quality=80`} 
                   alt={item.name} 
+                  loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                 />
                 
                 <div className="absolute top-4 left-4 flex gap-2">
-                  <div className="bg-slate-900 dark:bg-cyan-500 text-white text-[9px] font-black px-2.5 py-1 rounded-md tracking-tighter">
-                    {item.tag}
+                  <div className="bg-slate-900 dark:bg-cyan-500 text-white text-[9px] font-black px-2.5 py-1 rounded-md tracking-tighter uppercase">
+                    {item.category}
                   </div>
                 </div>
                 <div className="absolute bottom-4 right-4 text-[9px] font-mono text-slate-400 dark:text-neutral-500 bg-white/80 dark:bg-black/80 backdrop-blur-md px-2 py-1 rounded">
-                  {item.sn}
+                  UNIT_{item.id.slice(0, 5).toUpperCase()}
                 </div>
               </div>
 
               <div className="px-1">
-                <h3 className="font-bold text-xl text-slate-900 dark:text-white transition-colors">
+                <h3 className="font-bold text-xl text-slate-900 dark:text-white transition-colors truncate">
                   {item.name}
                 </h3>
                 
@@ -74,7 +102,7 @@ export default function FeaturedCollection() {
                   <div>
                     <p className="text-[10px] text-slate-400 dark:text-neutral-500 uppercase font-black tracking-widest mb-1">Price / USD</p>
                     <p className="text-xl font-black text-cyan-600 dark:text-cyan-400 font-mono">
-                      ${item.price}
+                      ${item.price.toLocaleString()}
                     </p>
                   </div>
                   
