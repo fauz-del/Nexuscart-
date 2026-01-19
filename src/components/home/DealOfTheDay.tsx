@@ -5,13 +5,20 @@ export default function DealOfTheDay() {
   const navigate = useNavigate(); 
   const [time, setTime] = useState({ h: 24, m: 0, s: 0 });
   
-  // FIX: Get the base path dynamically from Vite
+  /**
+   * FIX: import.meta.env.BASE_URL maps to '/Nexuscart-/' from vite.config.mts.
+   * This is required for local assets in the /public folder on GitHub Pages.
+   */
   const base = import.meta.env.BASE_URL;
 
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
-      setTime({ h: 23 - now.getHours(), m: 59 - now.getMinutes(), s: 59 - now.getSeconds() });
+      setTime({ 
+        h: 23 - now.getHours(), 
+        m: 59 - now.getMinutes(), 
+        s: 59 - now.getSeconds() 
+      });
     }, 1000);
     return () => clearInterval(timer);
   }, []);
@@ -20,20 +27,29 @@ export default function DealOfTheDay() {
     <section className="py-18 px-6 bg-white dark:bg-black transition-colors duration-500">
       <div className="max-w-7xl mx-auto bg-neutral-950/95 backdrop-blur-xl border border-cyan-500/20 rounded-[48px] p-8 md:p-12 flex flex-col lg:flex-row items-center gap-12 relative overflow-hidden shadow-2xl">
         
+        {/* Decorative Background Glow */}
         <div className="absolute -top-10 -right-10 w-80 h-80 bg-cyan-500/10 blur-[150px] animate-pulse" />
 
-        <div className="relative w-full lg:w-1/2 flex justify-center">
+        {/* Visual Block */}
+        <div className="relative w-full lg:w-1/2 flex justify-center group">
           <img 
-            /* FIXED PATH FOR 2026 GITHUB PAGES */
+            /* 
+               FIX: Path mapping to /public/assets/headphones/headphones2.jpg 
+               Case-sensitive and includes the repository subfolder prefix.
+            */
             src={`${base}assets/headphones/headphones2.jpg`} 
             alt="Deal of the day product" 
-            className="w-64 md:w-80 object-contain drop-shadow-[0_0_50px_rgba(6,182,212,0.3)] group-hover:scale-105 transition-transform duration-700" 
+            className="w-64 md:w-80 object-contain drop-shadow-[0_0_50px_rgba(6,182,212,0.3)] transition-transform duration-700 group-hover:scale-110" 
+            onError={(e) => {
+               (e.target as HTMLImageElement).src = "https://via.placeholder.com";
+            }}
           />
-          <div className="absolute -top-4 -left-4 bg-red-600 text-white text-lg font-black px-4 py-2 rounded-lg rotate-[-15deg] shadow-xl">
+          <div className="absolute -top-4 -left-4 bg-red-600 text-white text-lg font-black px-4 py-2 rounded-lg rotate-[-15deg] shadow-xl animate-bounce">
             40% OFF
           </div>
         </div>
 
+        {/* Content Block */}
         <div className="flex-1 text-center lg:text-left relative z-10">
           <span className="text-cyan-400 font-mono text-xs tracking-widest uppercase mb-3 block">Flash Sale Protocol Initiated</span>
           
@@ -42,26 +58,30 @@ export default function DealOfTheDay() {
           </h2>
           
           <p className="text-gray-400 max-w-lg mb-8 text-base md:text-lg leading-relaxed">
-            Quantum Audio Sonic-H2 Headphones. 80h Battery. Adaptive ANC. Spatial Audio. This offer expires in exactly 24 hours.
+            Quantum Audio Sonic-H2 Headphones. 80h Battery. Adaptive ANC. Spatial Audio. This offer expires at midnight.
           </p>
           
-          <div className="flex justify-center lg:justify-start gap-6 mb-10">
+          {/* Countdown Timer */}
+          <div className="flex justify-center lg:justify-start gap-4 md:gap-6 mb-10">
             {[time.h, time.m, time.s].map((v, i) => (
               <div key={i} className="text-center">
-                <div className="text-4xl md:text-5xl font-mono font-black text-cyan-400 bg-black/50 border border-cyan-500/20 w-24 md:w-28 py-3 rounded-xl shadow-inner shadow-cyan-500/10">
+                <div className="text-4xl md:text-5xl font-mono font-black text-cyan-400 bg-black/50 border border-cyan-500/20 w-20 md:w-28 py-3 rounded-xl shadow-inner shadow-cyan-500/10">
                   {v.toString().padStart(2, '0')}
                 </div>
-                <div className="text-[11px] mt-2 text-gray-500 uppercase tracking-widest">{['Hours', 'Minutes', 'Seconds'][i]}</div>
+                <div className="text-[10px] mt-2 text-gray-500 uppercase tracking-widest font-bold">
+                  {['Hours', 'Minutes', 'Seconds'][i]}
+                </div>
               </div>
             ))}
           </div>
 
           <button 
-            onClick={() => navigate('/shop/product/a2')}
+            /* Updated route to a generic shop path or specific ID if known */
+            onClick={() => navigate('/shop')}
             className="w-full lg:w-auto group relative overflow-hidden bg-white text-black px-12 py-4 rounded-xl font-black text-base uppercase tracking-widest transition-all hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] active:scale-95 cursor-pointer"
           >
             <span className="relative z-10">Secure Unit</span>
-             <div className="absolute inset-0 bg-cyan-500 translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
+            <div className="absolute inset-0 bg-cyan-500 translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
           </button>
         </div>
       </div>

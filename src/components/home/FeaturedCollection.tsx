@@ -7,8 +7,10 @@ export default function FeaturedCollection() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // FIX: Base URL for 2026 Supabase public storage access
-  const baseImgUrl = "https://welgpcjogqzmidyrjhwj.supabase.co";
+  const base = import.meta.env.BASE_URL; // '/Nexuscart-/'
+  const PROJECT_ID = "welgpcjogqzmidyrjhwj";
+  const BUCKET_NAME = "product-images";
+  const baseImgUrl = `https://${PROJECT_ID}.supabase.co/storage/v1/object/public/${BUCKET_NAME}/`;
 
   useEffect(() => {
     async function fetchFeatured() {
@@ -20,16 +22,10 @@ export default function FeaturedCollection() {
           .limit(4);
 
         if (error) throw error;
-
         if (!data || data.length === 0) {
-          const { data: fallback } = await supabase
-            .from('products')
-            .select('*')
-            .limit(4)
-            .order('created_at', { ascending: false });
+          const { data: fallback } = await supabase.from('products').select('*').limit(4);
           data = fallback;
         }
-
         if (data) setProducts(data);
       } catch (err) {
         console.error("FEATURED_SYNC_ERROR:", err);
@@ -40,7 +36,11 @@ export default function FeaturedCollection() {
     fetchFeatured();
   }, []);
 
-  if (loading) return null;
+  if (loading) return (
+    <div className="py-24 text-center font-mono text-cyan-500 animate-pulse uppercase tracking-widest">
+      Syncing_Hardware_Data...
+    </div>
+  );
 
   return (
     <section className="py-19 px-6 max-w-7xl mx-auto bg-white dark:bg-black transition-colors duration-500 transform-gpu">
@@ -60,67 +60,59 @@ export default function FeaturedCollection() {
           className="group flex items-center gap-4 text-slate-900 dark:text-white font-bold text-sm tracking-widest uppercase cursor-pointer"
         >
           <span className="border-b-2 border-slate-900/10 dark:border-white/10 group-hover:border-cyan-500 transition-all">Explore All Units</span>
-          <svg className="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((item, i) => (
+        {products.map((item) => (
           <div 
             key={item.id} 
-            className="group relative cursor-pointer transform-gpu will-change-transform"
+            className="group relative cursor-pointer"
             onClick={() => navigate(`/shop/product/${item.id}`)}
           >
-            <div className="relative overflow-hidden bg-slate-50 dark:bg-neutral-900/40 border border-slate-200 dark:border-white/5 rounded-[40px] p-5 transition-all duration-500 hover:border-cyan-500/50 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_50px_rgba(6,182,212,0.15)]">
+            <div className="relative overflow-hidden bg-slate-50 dark:bg-neutral-900/40 border border-slate-200 dark:border-white/5 rounded-[40px] p-5 transition-all duration-500 hover:border-cyan-500/50">
               
-              <div className="relative aspect-square w-full mb-6 overflow-hidden rounded-[30px] bg-white dark:bg-black border border-slate-100 dark:border-white/5">
+              <div className="relative aspect-square w-full mb-6 overflow-hidden rounded-[30px] bg-white dark:bg-black">
                 <img 
-                  /* 
-                     FIX: We construct the URL manually because the 'image_url' in 
-                     your database likely only contains the filename (e.g., 'iphone1.jpeg').
-                     Also removed '?width=400' to prevent 404s on the Free Plan.
-                  */
-                  src={`${baseImgUrl}${item.image_url}`} 
+                  // 1. Try Supabase first
+                  src={item.image_url?.startsWith('http') ? item.image_url : `${baseImgUrl}${item.image_url}`} 
                   alt={item.name} 
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    
+                    // 2. CLEAN FILENAME: This fixes the "welgpcjog...headphones2.jpg" issue
+                    const raw = item.image_url || "";
+                    const fileName = raw.includes('supabase.co') 
+                      ? raw.split('supabase.co').pop() // Strips the domain
+                      : raw.split('/').pop();          // Strips paths
+
+                    // 3. FOLDER MAPPING
+                    const cat = item.category?.toLowerCase() || "";
+                    let folder = 'lp';
+                    if (cat.includes('audio') || cat.includes('head') || cat.includes('air')) folder = 'headphones';
+                    else if (cat.includes('mobile') || cat.includes('phone')) folder = 'phones';
+                    else if (cat.includes('watch') || cat.includes('wear')) folder = 'watch';
+                    else if (cat.includes('glass')) folder = 'glasses';
+                    else if (cat.includes('vr')) folder = 'vrgoogle';
+
+                    // Special case for airpods if they are in their own folder
+                    if (fileName.includes('airpod')) folder = 'airpod';
+
+                    // 4. FINAL LOCAL PATH
+                    const localPath = `${base}assets/${folder}/${fileName}`;
+                    
+                    if (target.src !== window.location.origin + localPath) {
+                      console.log("Cleaned Fallback:", localPath);
+                      target.src = localPath;
+                    }
+                  }}
                 />
-                
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <div className="bg-slate-900 dark:bg-cyan-500 text-white text-[9px] font-black px-2.5 py-1 rounded-md tracking-tighter uppercase">
-                    {item.category}
-                  </div>
-                </div>
-                <div className="absolute bottom-4 right-4 text-[9px] font-mono text-slate-400 dark:text-neutral-500 bg-white/80 dark:bg-black/80 backdrop-blur-md px-2 py-1 rounded">
-                  UNIT_{item.id.toString().slice(0, 5).toUpperCase()}
-                </div>
               </div>
 
               <div className="px-1">
-                <h3 className="font-bold text-xl text-slate-900 dark:text-white transition-colors truncate">
-                  {item.name}
-                </h3>
-                
-                <div className="flex justify-between items-end mt-4">
-                  <div>
-                    <p className="text-[10px] text-slate-400 dark:text-neutral-500 uppercase font-black tracking-widest mb-1">Price / USD</p>
-                    <p className="text-xl font-black text-cyan-600 dark:text-cyan-400 font-mono">
-                      ${item.price.toLocaleString()}
-                    </p>
-                  </div>
-                  
-                  <button className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-black group-hover:bg-cyan-500 dark:group-hover:bg-cyan-400 group-hover:text-white transition-all duration-300 shadow-xl shadow-transparent group-hover:shadow-cyan-500/20">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              <div className="absolute top-0 right-0 p-3 opacity-20">
-                <div className="w-4 h-4 border-t-2 border-r-2 border-slate-400 dark:border-white" />
+                <h3 className="font-bold text-xl text-slate-900 dark:text-white truncate">{item.name}</h3>
+                <p className="text-xl font-black text-cyan-600 dark:text-cyan-400 font-mono">${item.price}</p>
               </div>
             </div>
           </div>

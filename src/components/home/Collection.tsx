@@ -3,36 +3,38 @@ import { useNavigate } from "react-router-dom";
 export default function Collection() {
   const navigate = useNavigate();
 
-  // FIX: Added the mandatory storage API path and your bucket name
-  const baseImgUrl = "https://welgpcjogqzmidyrjhwj.supabase.co";
+  /**
+   * FIX: This reads '/Nexuscart-/' from your vite.config.mts.
+   * This ensures images load on both local dev and GitHub Pages.
+   */
+  const base = import.meta.env.BASE_URL;
 
   const categories = [
     { 
       name: "VR GEAR", 
       dbName: "VR", 
-      // Result: https://welgpcjogqzmidyrjhwj.supabase.covrgoogles1.jpeg
-      img: `${baseImgUrl}vrgoogles1.jpeg`, 
+      path: "vrgoogle/vrgoogles1.jpg", // Ensure extension matches your tree
       size: "md:col-span-2 md:row-span-2", 
       tag: "Immersive" 
     },
     { 
       name: "SMART WATCH", 
       dbName: "Wearable", 
-      img: `${baseImgUrl}smartwatch1.jpeg`, 
+      path: "watch/smartwatch1.jpg", 
       size: "md:col-span-1 md:row-span-1", 
       tag: "Wearable" 
     },
     { 
       name: "AUDIO", 
       dbName: "Audio", 
-      img: `${baseImgUrl}headphones3.jpg`, 
+      path: "headphones/headphones3.jpg", 
       size: "md:col-span-1 md:row-span-2", 
       tag: "Hi-Fi" 
     },
     { 
       name: "MOBILE", 
       dbName: "Mobile", 
-      img: `${baseImgUrl}iphone1.jpeg`, 
+      path: "phones/iphone1.jpg", 
       size: "md:col-span-1 md:row-span-1", 
       tag: "Next-Gen" 
     },
@@ -68,7 +70,11 @@ export default function Collection() {
               className={`relative group overflow-hidden rounded-[2rem] border border-white/5 cursor-pointer transform-gpu will-change-transform ${cat.size}`}
             >
               <img 
-                src={cat.img} 
+                /* 
+                   FIX: Combines the base path + assets folder + specific image path.
+                   Example result: /Nexuscart-/assets/phones/iphone1.jpeg
+                */
+                src={`${base}assets/${cat.path}`} 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
                 alt={cat.name} 
                 loading="lazy"

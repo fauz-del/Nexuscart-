@@ -2,8 +2,6 @@ import { useState } from 'react';
 
 export default function Heromaster() {
   const [activeTab, setActiveTab] = useState(0);
-
-  // FIX: Get the dynamic base path (e.g., "/Nexuscart-/")
   const base = import.meta.env.BASE_URL;
 
   const slides = [
@@ -11,125 +9,146 @@ export default function Heromaster() {
       id: "01",
       title: "SONIC",
       subtitle: "PRECISION",
-      desc: "Pure acoustic architecture with G-7 neural tuning.",
-      // FIX: Prepend the base variable to the path
+      desc: "Pure acoustic architecture with G-7 neural tuning and spatial resonance.",
       img: `${base}assets/headphones/headphones2.jpg`,
       accent: "text-cyan-500",
-      theme: "asymmetric"
+      bgAccent: "bg-cyan-500",
+      stats: ["48bit Audio", "Active ANC", "Neural-Sync"]
     },
     {
       id: "02",
       title: "VISION",
       subtitle: "SPATIAL",
-      desc: "Retinal-grade optics for the next spatial frontier.",
-      img: `${base}assets/vrgoogle/vrgoogle2.jpeg`,
+      desc: "Retinal-grade optics for the next frontier of immersive computing.",
+      img: `${base}assets/vrgoogle/vrgoogle2.jpg`,
       accent: "text-blue-500",
-      theme: "data-driven"
+      bgAccent: "bg-blue-500",
+      stats: ["16K Micro-OLED", "0.02ms Latency", "Eye-Track"]
     },
     {
       id: "03",
       title: "NEXUS",
       subtitle: "MOBILE",
-      desc: "The titanium standard for future-ready connectivity.",
-      img: `${base}assets/phones/phone1.jpeg`,
+      desc: "The titanium standard for future-ready connectivity and global power.",
+      img: `${base}assets/phones/phone1.jpg`,
       accent: "text-purple-500",
-      theme: "minimalist"
+      bgAccent: "bg-purple-500",
+      stats: ["3nm Chipset", "Satellite-Link", "Mag-Safe v2"]
     }
   ];
 
   return (
-    <section className="relative min-h-screen w-full bg-white dark:bg-black overflow-hidden transition-colors duration-700">
+    <section className="relative min-h-screen w-full bg-[#050505] text-white overflow-hidden font-sans">
       
-      {/* 1. Global Background Label */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] dark:opacity-[0.07]">
-        <h1 className="text-[20vw] font-black tracking-tighter leading-none select-none">
+      {/* 1. LAYERED BACKGROUND TEXT (Moved up to fill space) */}
+      <div className="absolute top-10 left-0 w-full flex justify-center pointer-events-none select-none overflow-hidden">
+        <h1 className="text-[28vw] font-black tracking-tighter leading-none opacity-[0.04] uppercase italic transform -rotate-2">
           {slides[activeTab].title}
         </h1>
       </div>
 
-      <div className="max-w-7xl mx-auto min-h-screen flex flex-col justify-center px-6 relative z-10">
+      <div className="relative z-10 max-w-[1600px] mx-auto min-h-screen flex items-center px-6">
         
-        {/* Layout Switcher */}
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        {/* 2. MAIN INTERLOCKING GRID */}
+        <div className="grid lg:grid-cols-12 gap-0 w-full items-center">
           
-          {/* LEFT: CONTENT BLOCK */}
-          <div className="order-2 lg:order-1">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="font-mono text-xs text-slate-400">ID // {slides[activeTab].id}</span>
-              <div className="h-[1px] w-12 bg-cyan-500"></div>
+          {/* LEFT CONTENT (Spans 5 cols) */}
+          <div className="lg:col-span-5 z-30 pt-20 lg:pt-0">
+            <div className="inline-flex items-center gap-3 px-3 py-1 rounded-full border border-white/10 bg-white/5 mb-8 backdrop-blur-md">
+              <span className={`w-2 h-2 rounded-full animate-pulse ${slides[activeTab].bgAccent}`} />
+              <span className="text-[10px] font-mono tracking-widest uppercase opacity-70">Hardware_ID // {slides[activeTab].id}</span>
             </div>
 
-            <h1 className="text-7xl md:text-[120px] font-black tracking-tighter leading-[0.8] text-slate-900 dark:text-white mb-8">
+            <h1 className="text-8xl md:text-[140px] font-black tracking-tighter leading-[0.75] mb-10 uppercase italic">
               {slides[activeTab].title} <br />
-              <span className={slides[activeTab].accent}>{slides[activeTab].subtitle}</span>
+              <span className={`bg-clip-text text-transparent bg-gradient-to-r from-white via-white/80 to-transparent ${slides[activeTab].accent}`}>
+                {slides[activeTab].subtitle}
+              </span>
             </h1>
 
-            <p className="text-slate-500 dark:text-neutral-400 text-lg md:text-xl max-w-md mb-10 leading-relaxed">
+            <p className="text-neutral-400 text-lg md:text-xl max-w-sm mb-12 leading-tight font-light">
               {slides[activeTab].desc}
             </p>
 
-            <div className="flex items-center gap-6">
-              <button className="bg-slate-900 dark:bg-white text-white dark:text-black px-12 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-cyan-500 transition-all cursor-pointer shadow-xl">
-                Pre-Order
-              </button>
-              <button className="p-4 border border-slate-200 dark:border-neutral-800 rounded-2xl hover:border-cyan-500 transition-all cursor-pointer">
-                <svg className="w-6 h-6 text-slate-900 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div className="flex flex-wrap gap-4">
+              <button className="relative group overflow-hidden bg-white text-black px-12 py-5 font-black uppercase text-xs tracking-widest transition-transform active:scale-95">
+                <span className="relative z-10">Initialize Pre-Order</span>
+                <div className={`absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ${slides[activeTab].bgAccent}`} />
               </button>
             </div>
           </div>
 
-          {/* RIGHT: DYNAMIC VISUAL BLOCK */}
-          <div className="order-1 lg:order-2 relative flex justify-center">
-             <div className="relative w-full max-w-[500px] aspect-[4/5] rounded-[60px] overflow-hidden group border border-slate-200 dark:border-white/5">
+          {/* RIGHT VISUAL (Spans 7 cols, uses offset to fill space) */}
+          <div className="lg:col-span-7 relative mt-12 lg:mt-0">
+            <div className="relative group ml-auto max-w-[700px]">
+              
+              {/* CYBER SIDEBAR (Fills the vertical space next to image) */}
+              <div className="absolute -left-12 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-8 z-40">
+                 {slides[activeTab].stats.map((stat, i) => (
+                   <div key={i} className="flex items-center gap-4 bg-black/80 backdrop-blur-xl border border-white/10 p-4 rounded-xl transform hover:translate-x-2 transition-transform cursor-default">
+                      <div className={`w-1 h-8 ${slides[activeTab].bgAccent}`} />
+                      <span className="font-mono text-[10px] tracking-tighter uppercase">{stat}</span>
+                   </div>
+                 ))}
+              </div>
+
+              {/* MAIN IMAGE CONTAINER */}
+              <div className="relative aspect-[16/10] lg:aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl shadow-black">
                 <img 
-                  key={activeTab} 
+                  key={activeTab}
                   src={slides[activeTab].img} 
-                  className="w-full h-full object-cover animate-fade-in grayscale-[50%] group-hover:grayscale-0 transition-all duration-1000"
-                  alt="Product" 
+                  className="w-full h-full object-cover animate-main-fade grayscale-[20%] group-hover:grayscale-0 transition-all duration-1000"
+                  alt="Tech"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.src = `https://via.placeholder.com{slides[activeTab].title}+v2026`;
+                  }}
                 />
                 
-                {activeTab === 1 && (
-                  <div className="absolute inset-0 p-8 flex flex-col justify-between pointer-events-none">
-                    <div className="flex justify-between text-[10px] font-mono text-cyan-400 bg-black/40 backdrop-blur-md p-2 rounded">
-                      <span>SCAN_STATUS: OK</span>
-                      <span>LATENCY: 0.02MS</span>
-                    </div>
-                    <div className="w-20 h-20 border-b-2 border-r-2 border-cyan-500 self-end opacity-50"></div>
-                  </div>
-                )}
-             </div>
-             <div className="absolute -z-10 -bottom-6 -right-6 w-40 h-40 bg-cyan-500/10 blur-[80px] rounded-full"></div>
+                {/* HUD Overlay elements */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+                <div className="absolute top-6 right-6 border-t-2 border-r-2 w-16 h-16 border-white/20" />
+                <div className="absolute bottom-6 left-6 border-b-2 border-l-2 w-16 h-16 border-white/20" />
+              </div>
+
+              {/* BOTTOM FLOATING INFO */}
+              <div className="absolute -bottom-6 -left-6 bg-white text-black p-8 rounded-2xl hidden md:block">
+                <p className="font-mono text-[10px] uppercase font-bold tracking-tighter mb-1">Stock_Status</p>
+                <p className="text-2xl font-black">98.2% READY</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 3. NAVIGATION CONTROLS */}
-        <div className="absolute bottom-12 right-6 lg:right-12 flex items-center gap-8">
+        {/* 3. VERTICAL NAVIGATION (Replaces standard bottom bar to save space) */}
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-12 z-50">
           {slides.map((slide, index) => (
             <button
               key={slide.id}
               onClick={() => setActiveTab(index)}
-              className="group flex flex-col items-start gap-2 cursor-pointer"
+              className="group flex items-center gap-6 text-left"
             >
-              <span className={`text-[10px] font-black tracking-widest transition-colors ${activeTab === index ? 'text-cyan-500' : 'text-slate-400'}`}>
-                {slide.id}
-              </span>
-              <div className={`h-[2px] transition-all duration-500 ${activeTab === index ? 'w-12 bg-cyan-500' : 'w-4 bg-slate-300 dark:bg-neutral-800 group-hover:w-8'}`}></div>
+              <div className="flex flex-col items-end">
+                <span className={`text-[10px] font-mono tracking-widest uppercase transition-all ${activeTab === index ? slides[activeTab].accent : 'opacity-30'}`}>
+                  Unit_0{slide.id}
+                </span>
+                <span className={`text-xs font-black transition-all ${activeTab === index ? 'opacity-100' : 'opacity-0 -translate-x-2'}`}>
+                  {slide.title}
+                </span>
+              </div>
+              <div className={`w-1 transition-all duration-500 ${activeTab === index ? `h-12 ${slides[activeTab].bgAccent}` : 'h-4 bg-white/20 group-hover:h-8'}`} />
             </button>
           ))}
         </div>
       </div>
 
-      <style jsx="true">
-      {`
-        @keyframes fade-in {
-          from { opacity: 0; transform: scale(1.05) translateY(10px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
+      <style jsx="true">{`
+        @keyframes main-fade {
+          0% { opacity: 0; transform: scale(1.1) translateX(30px); filter: blur(10px); }
+          100% { opacity: 1; transform: scale(1) translateX(0); filter: blur(0); }
         }
-        .animate-fade-in {
-          animation: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        .animate-main-fade {
+          animation: main-fade 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
       `}</style>
     </section>
