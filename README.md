@@ -47,14 +47,12 @@ To initialize the mainframe locally:
   ```bash
     pnpm run dev
 
-   -----
 📜 Database Schema
 The project uses the following PostgreSQL structure:
 - products: name, price, description, category, image_url, is_popular, is_featured.
 - orders: user_id, total_amount, status, payment_reference.
 - order_items: order_id, product_id, quantity, price_at_purchase.
 
----
 Status: Operational // 2026
 ### 3. Save and Exit
 *   Press `CTRL + O`, then `Enter` to save.
