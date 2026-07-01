@@ -1,6 +1,5 @@
-const API_URL = "https://your-nexuscart-backend.up.railway.app";
+const API_URL = "https://nexuscart-backend-ytmw.onrender.com";
 
-// Helper to save/get/remove token from localStorage
 const saveToken = (token) => localStorage.setItem("nexus_token", token);
 const getToken = () => localStorage.getItem("nexus_token");
 const removeToken = () => localStorage.removeItem("nexus_token");
