@@ -1,34 +1,32 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../../lib/supabase"; // Ensure this path is correct
-
-const GOOGLE_PATH = '<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.1 2.38 29.36 0 24 0 16.51 0 9.8 4.48 6.46 11.16l6.85 5.33C14.71 11.73 19.04 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.1h12.46c-.56 2.92-2.1 5.39-4.43 7.0v5.99h7.79c4.54-4.18 7.15-10.35 7.15-17.54z"/><path fill="#FBBC05" d="M6.46 11.16v5.33H0C1.73 20.81 4.54 24.55 6.46 24.55c.9 1.09 1.86 2.05 2.76 2.91v6.26H0v6.01c3.45-6.82 8.35-11.52 14.73-14.73C12.19 19.36 9.11 15.04 6.46 11.16z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.79-5.99c-2.18 1.46-5.02 2.3-8.1 2.3-4.94 0-9.26-2.62-11.51-6.59l-6.85 5.33C9.8 43.52 16.51 48 24 48z"/>';
+import { authService } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState("selection"); // selection, login, signup
+  const { login } = useAuth();
+  const [mode, setMode] = useState("selection");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Logic: Handle Email/Password Auth
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
 
     try {
+      let data;
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        data = await authService.signIn(email, password);
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        alert("Registration Successful. Check your email (or just login if email confirm is off).");
+        data = await authService.signUp(email, password);
       }
-      navigate("/"); // Send to home on success
+      login(data.user);
+      navigate("/");
     } catch (err: any) {
       setErrorMsg(err.message.toUpperCase());
     } finally {
@@ -36,32 +34,23 @@ const Login = () => {
     }
   };
 
-  // Logic: Handle Google Login
-  const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin }
-    });
-    if (error) alert(error.message);
-  };
-
   return (
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center px-6 relative overflow-hidden transition-colors duration-500">
-      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07] pointer-events-none" 
+      <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07] pointer-events-none"
            style={{ backgroundImage: `radial-gradient(circle at 2px 2px, #06b6d4 1px, transparent 0)`, backgroundSize: '32px 32px' }}>
       </div>
 
-      <motion.div 
+      <motion.div
         layout
         className="relative z-10 w-full max-w-sm bg-white/40 dark:bg-neutral-950/40 backdrop-blur-2xl border border-slate-200 dark:border-white/10 rounded-[40px] p-10 text-center shadow-2xl overflow-hidden"
       >
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-slate-900 dark:bg-white mb-8 shadow-xl">
-           <span className="text-white dark:text-black font-black text-2xl">N</span>
+          <span className="text-white dark:text-black font-black text-2xl">N</span>
         </div>
 
         <AnimatePresence mode="wait">
           {mode === "selection" && (
-            <motion.div 
+            <motion.div
               key="selection"
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -71,24 +60,18 @@ const Login = () => {
               <h1 className="text-4xl font-black tracking-tighter text-slate-900 dark:text-white uppercase italic leading-none mb-2">
                 NEXUS <span className="text-cyan-500">AUTH</span>
               </h1>
-              <p className="text-slate-500 dark:text-neutral-400 text-sm mb-8">Deploy your credentials to proceed.</p>
-              
-              <button 
-                onClick={handleGoogleLogin}
-                className="w-full flex items-center justify-center gap-4 py-4 rounded-2xl border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-bold text-sm hover:bg-slate-100 dark:hover:bg-white/5 transition-all cursor-pointer"
-              >
-                 <svg className="w-5 h-5" viewBox="0 0 48 48" dangerouslySetInnerHTML={{ __html: GOOGLE_PATH }} />
-                 Google Protocol
-              </button>
+              <p className="text-slate-500 dark:text-neutral-400 text-sm mb-8">
+                Deploy your credentials to proceed.
+              </p>
 
-              <button 
+              <button
                 onClick={() => setMode("login")}
                 className="w-full bg-slate-900 dark:bg-white text-white dark:text-black py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all hover:bg-cyan-500 cursor-pointer"
               >
                 Sign In
               </button>
 
-              <button 
+              <button
                 onClick={() => setMode("signup")}
                 className="w-full py-4 rounded-2xl border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-black uppercase tracking-widest text-xs hover:bg-slate-100 dark:hover:bg-white/5 transition-all cursor-pointer"
               >
@@ -98,7 +81,7 @@ const Login = () => {
           )}
 
           {(mode === "login" || mode === "signup") && (
-            <motion.form 
+            <motion.form
               onSubmit={handleAuth}
               key="form"
               initial={{ opacity: 0, x: 30 }}
@@ -119,29 +102,29 @@ const Login = () => {
               <div className="space-y-4 mt-2">
                 <div>
                   <label className="text-[10px] font-black text-slate-400 dark:text-neutral-600 uppercase tracking-widest ml-1">Email</label>
-                  <input 
+                  <input
                     required
-                    type="email" 
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="USER@NEXUS.COM" 
-                    className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/5 px-4 py-3 rounded-xl text-xs font-mono dark:text-white focus:border-cyan-500 outline-none" 
+                    placeholder="USER@NEXUS.COM"
+                    className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/5 px-4 py-3 rounded-xl text-xs font-mono dark:text-white focus:border-cyan-500 outline-none"
                   />
                 </div>
                 <div>
                   <label className="text-[10px] font-black text-slate-400 dark:text-neutral-600 uppercase tracking-widest ml-1">Password</label>
-                  <input 
+                  <input
                     required
-                    type="password" 
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••" 
-                    className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/5 px-4 py-3 rounded-xl text-xs font-mono dark:text-white focus:border-cyan-500 outline-none" 
+                    placeholder="••••••••"
+                    className="w-full bg-slate-100 dark:bg-black border border-slate-200 dark:border-white/5 px-4 py-3 rounded-xl text-xs font-mono dark:text-white focus:border-cyan-500 outline-none"
                   />
                 </div>
               </div>
 
-              <button 
+              <button
                 disabled={loading}
                 type="submit"
                 className="w-full bg-cyan-500 text-black py-4 rounded-xl font-black uppercase tracking-widest text-xs shadow-lg shadow-cyan-500/20 cursor-pointer disabled:opacity-50"
@@ -149,7 +132,7 @@ const Login = () => {
                 {loading ? "PROCESSING..." : (mode === "login" ? "Confirm Login" : "Initialize Account")}
               </button>
 
-              <button 
+              <button
                 type="button"
                 onClick={() => setMode("selection")}
                 className="text-center text-[10px] font-bold text-slate-400 dark:text-neutral-600 uppercase tracking-widest hover:text-cyan-500 transition-colors cursor-pointer"
@@ -160,7 +143,7 @@ const Login = () => {
           )}
         </AnimatePresence>
 
-        <button 
+        <button
           onClick={() => navigate('/')}
           className="mt-10 text-[10px] font-black text-slate-400 dark:text-neutral-600 hover:text-cyan-500 uppercase tracking-[0.3em] transition-colors cursor-pointer"
         >

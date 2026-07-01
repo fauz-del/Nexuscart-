@@ -1,21 +1,13 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { useState, useEffect } from 'react';
+import { ALL_PRODUCTS } from '../data/products.ts';
 
 export function useProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchProducts() {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (!error) setProducts(data);
-      setLoading(false);
-    }
-    fetchProducts();
+    setProducts(ALL_PRODUCTS);
+    setLoading(false);
   }, []);
 
   return { products, loading };
