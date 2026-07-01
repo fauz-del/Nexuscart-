@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck, Truck, RotateCcw, Zap } from 'lucide-react';
+import Footer from '../../components/home/Footer';
 import { useCart } from '../../context/CartContext';
 import { ALL_PRODUCTS } from '../../data/products.ts';
 
@@ -283,6 +284,7 @@ export default function ProductPage() {
           </div>
         )}
       </div>
+<Footer />
     </div>
   );
 }
